@@ -44,29 +44,18 @@ def perform_logistic_regression(data):
     model.fit(X, y)
 
     # オッズ比を計算
-    odds_ratio = np.exp(model.coef_[0])
+    odds_ratio = np.exp(model.coef_.ravel())
 
     # p値を計算
     n = len(y)
     p = X.shape[1]
-    p_values = 2 * (1 - stats.norm.cdf(np.abs(model.coef_)))
+    p_values = 2 * (1 - stats.norm.cdf(np.abs(model.coef_.ravel())))
 
     # 統計量のDataFrameを作成
-    statistics = pd.DataFrame({"係数": model.coef_[0], "p値": p_values, "オッズ比": odds_ratio}, index=X.columns)
+    statistics = pd.DataFrame({"係数": model.coef_.ravel(), "p値": p_values, "オッズ比": odds_ratio}, index=X.columns)
     statistics.loc["切片"] = [model.intercept_[0], np.nan, np.nan]
 
     return model, statistics
-
-def perform_clustering(data):
-    X = data.iloc[:, 1:]  # 1列目以降を説明変数として抽出
-
-    # クラスタリングの実行
-    model = KMeans(n_clusters=3)  # クラスタ数を3として設定
-    model.fit(X)
-
-    cluster_labels = model.labels_
-    return cluster_labels
-
 def plot_scatter(x, y, y_pred, model_name=""):
     plt.scatter(x, y, label="実績値")
     plt.plot(x, y_pred, color='red', label="予測値")
