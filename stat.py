@@ -37,11 +37,11 @@ def perform_linear_regression(data):
     return model, r2, statistics
 
 def perform_logistic_regression(data):
-    X = data.iloc[:, 1:]  # 1列目以降を説明変数として抽出
-    y = data.iloc[:, 0]   # 0列目を被説明変数として抽出
+    X = data.iloc[:, 1:].values.ravel()  # 1列目以降を説明変数として抽出し、1次元配列に変換
+    y = data.iloc[:, 0].values.ravel()   # 0列目を被説明変数として抽出し、1次元配列に変換
 
     model = LogisticRegression()
-    model.fit(X, y)
+    model.fit(X.reshape(-1, 1), y)  # Xを2次元配列に変換してfitメソッドに渡す
 
     # オッズ比を計算
     odds_ratio = np.exp(model.coef_[0])
@@ -52,7 +52,7 @@ def perform_logistic_regression(data):
     p_values = 2 * (1 - stats.norm.cdf(np.abs(model.coef_)))
 
     # 統計量のDataFrameを作成
-    statistics = pd.DataFrame({"係数": model.coef_[0], "p値": p_values, "オッズ比": odds_ratio}, index=X.columns)
+    statistics = pd.DataFrame({"係数": model.coef_[0], "p値": p_values, "オッズ比": odds_ratio}, index=["説明変数"])
     statistics.loc["切片"] = [model.intercept_[0], np.nan, np.nan]
 
     return model, statistics
@@ -138,7 +138,4 @@ def main():
             # クラスタリングの実行
             st.subheader("クラスタリングの結果")
             cluster_labels = perform_clustering(data)
-            st.write("クラスタリング結果:", cluster_labels.tolist())
-
-if __name__ == "__main__":
-    main()
+           
