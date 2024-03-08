@@ -24,6 +24,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import r2_score
 import scipy.stats as stats
 from sklearn.cluster import KMeans, AgglomerativeClustering
+from statsmodels.graphics.tsaplots import plot_acf
 
 def perform_linear_regression(data):
     X = data.iloc[:, 1:]
@@ -111,7 +112,7 @@ def plot_arima_diagnostic_plots(model):
     plot_acf(model.resid(), lags=20, ax=ax)
     ax.set_title('Correlogram')
     st.pyplot()
-    
+
 def perform_kalman_filter(data, date_column):
     dates = pd.to_datetime(data[date_column])
     data_numeric = data.drop(columns=[date_column])
