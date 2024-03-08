@@ -78,8 +78,40 @@ def perform_arima(data, date_column):
     model = auto_arima(data_numeric, seasonal=True, m=12)
     forecast = model.predict(n_periods=len(dates))
 
+    plot_arima_diagnostic_plots(model)  # 新しく追加した関数を呼び出す
+
     return model, forecast, dates
 
+
+def plot_arima_diagnostic_plots(model):
+    # Standardized Residuals
+    fig, ax = plt.subplots(2, 2, figsize=(12, 8))
+    model.plot_diagnostics(fig=fig)
+    plt.tight_layout()
+    st.pyplot()
+
+    # Histogram plus estimated density
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(111)
+    ax.hist(model.resid(), bins=20, density=True, alpha=0.6, color='b')
+    ax.set_title('Histogram plus estimated density')
+    ax.set_xlabel('Residuals')
+    st.pyplot()
+
+    # Normal Q-Q plot
+    fig = plt.figure(figsize=(8, 6))
+    ax = fig.add_subplot(111)
+    stats.probplot(model.resid(), dist="norm", plot=ax)
+    ax.set_title('Normal Q-Q Plot')
+    st.pyplot()
+
+    # Correlogram
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(111)
+    plot_acf(model.resid(), lags=20, ax=ax)
+    ax.set_title('Correlogram')
+    st.pyplot()
+    
 def perform_kalman_filter(data, date_column):
     dates = pd.to_datetime(data[date_column])
     data_numeric = data.drop(columns=[date_column])
