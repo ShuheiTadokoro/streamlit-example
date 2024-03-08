@@ -6,3 +6,5 @@ pandas
 numpy
 matplotlib
 scikit-learn
+pmdarima
+pykalman
